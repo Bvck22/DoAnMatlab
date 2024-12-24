@@ -1,4 +1,5 @@
-function result = newtoninterpo(xa, ya, x)
+function result = NewtonSymbolic(xa, ya)
+    syms x;
     n = length(xa);
     d = ya; 
     for j = 2:n
@@ -10,5 +11,5 @@ function result = newtoninterpo(xa, ya, x)
     for i = n-1:-1:1
         result = result * (x - xa(i)) + d(i);
     end
-    result = result
+    result = expand(result);
 end

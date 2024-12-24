@@ -11,6 +11,5 @@ function result = lagrange(xa, ya, x)
         sum = sum + product; % C?ng t?ng ph?n vào t?ng
     end
     result = sum; % K?t qu? là ph??ng trình t?ng quát
-
 end
 
