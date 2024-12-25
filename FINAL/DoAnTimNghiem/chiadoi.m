@@ -9,6 +9,6 @@ function [c, n] = chiadoi(fx, a, b, saiso)
         else
             b = c;
         end
-        n = n + 1;
+        n = n;
     end
 end

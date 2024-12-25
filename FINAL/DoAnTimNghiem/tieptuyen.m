@@ -1,10 +1,10 @@
-function [x3, n3] = tieptuyen(fx, a, b ,saiso)
-    n3 = 0;
-    x3 = (a+b)/2;
-    syms x
-    df = matlabFunction(diff(fx(x)));
-    while abs((x3-fx(x3)/df(x3))-x3) > saiso
-        x3 = x3 - fx(x3)/df(x3);
-        n3 = n3 + 1 ;
-    end    
-end
+function [x1, n] = tieptuyen(fx, a, b, saiso) 
+    syms x; 
+    df = matlabFunction(diff(fx(x)));  % dao ham fx 
+    x1 = (a + b)/2; 
+    n = 0; 
+    while abs(fx(x1)) > saiso 
+x1 = x1 - fx(x1)/df(x1);  % newton 
+n = n + 1; 
+end 
+end 
