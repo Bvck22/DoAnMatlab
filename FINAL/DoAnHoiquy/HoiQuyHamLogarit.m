@@ -1,4 +1,5 @@
 function [yf] = HoiQuyHamLogarit(x, y)
+    % Tinh logarit tu nhien cua x
     X = log(x);
     n = length(X);
     sumx = 0;
@@ -17,11 +18,13 @@ function [yf] = HoiQuyHamLogarit(x, y)
     ym = sumy / n;
     b = (n * sumxy - sumx * sumy) / (n * sumx2 - sumx * sumx);
     a = ym - b * xm;
-    fprintf('He so a la : %.8f\n', a);
-    fprintf('He so b la : %.8f\n', b);
+    
     for i = 1:n
         st = st + (y(i) - ym)^2;
         sr = sr + (y(i) - (a + b * X(i)))^2;
     end
+    r2 = (st - sr) / st;
+    % Ve bieu do
     yf = a + b * log(x);
+   
 end

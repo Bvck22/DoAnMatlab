@@ -1,4 +1,4 @@
-function [ya] = HoiQuyHamTuyenTinh(x, y)
+function [ ya] = HoiQuyHamTuyenTinh(x, y)
     n = length(x);
     sumx = 0;
     sumy = 0;
@@ -20,5 +20,9 @@ function [ya] = HoiQuyHamTuyenTinh(x, y)
         st = st + (y(i) - ym)^2;
         sr = sr + (y(i) - a1 * x(i) - a0)^2;
     end
+    r2 = (st - sr) / st;
+    
+    % Ve bieu do
     ya = a0 + a1 * x;
+    
 end

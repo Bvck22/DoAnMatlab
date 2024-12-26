@@ -6,6 +6,8 @@ function [yf_sym] = LogaritSymbolic(x, y)
     sumy = 0;
     sumxy = 0;
     sumx2 = 0;
+    st = 0;
+    sr = 0;
     for i = 1:n
         sumx = sumx + X(i);
         sumy = sumy + y(i);
@@ -18,4 +20,5 @@ function [yf_sym] = LogaritSymbolic(x, y)
     a = ym - b * xm;
     syms x;
     yf_sym = a + b * log(x);
+    
 end

@@ -1,4 +1,4 @@
-function [yf_sym] = HamMuSymbolic(x, y)
+function [ yf_sym] = HamMuSymbolic(x, y)
     Y = log10(y);
     X = log10(x);
     n = length(X);
@@ -6,6 +6,8 @@ function [yf_sym] = HamMuSymbolic(x, y)
     sumy = 0;
     sumxy = 0;
     sumx2 = 0;
+    st = 0;
+    sr = 0;
     for i = 1:n
         sumx = sumx + X(i);
         sumy = sumy + Y(i);
@@ -19,5 +21,6 @@ function [yf_sym] = HamMuSymbolic(x, y)
     a = 10^A0;
     b = A1;
     syms x;
-    yf_sym = a * x^b;   
+    yf_sym = a * x^b;
+   
 end

@@ -18,14 +18,16 @@ function [yf] = HoiQuyHamMu(x, y)
     ym = sumy / n;
     A1 = (n * sumxy - sumx * sumy) / (n * sumx2 - sumx * sumx);
     A0 = ym - A1 * xm;
-    fprintf('Gia tri A0 la : %.8f\n', A0);
-    fprintf('Gia tri A1 la : %.8f\n', A1);
+    
     a = 10^A0;
     b = A1;
     for i = 1:n
         st = st + (Y(i) - ym)^2;
         sr = sr + (Y(i) - A1 * X(i) - A0)^2;
     end
+    r2 = (st - sr) / st;
+    % Ve bieu do
     yf = a .* x.^b;
+    
 end
 

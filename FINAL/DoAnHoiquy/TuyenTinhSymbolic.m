@@ -4,6 +4,8 @@ function [ya_sym] = TuyenTinhSymbolic(x, y)
     sumy = 0;
     sumxy = 0;
     sumx2 = 0;
+    st = 0;
+    sr = 0;
     for i = 1:n
         sumx = sumx + x(i);
         sumy = sumy + y(i);
@@ -16,4 +18,5 @@ function [ya_sym] = TuyenTinhSymbolic(x, y)
     a0 = ym - a1 * xm;
     syms x;
     ya_sym = a0 + a1 * x;
+    
 end
