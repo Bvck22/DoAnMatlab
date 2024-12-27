@@ -51,6 +51,8 @@ classdef DoAnMatlab_exported < matlab.apps.AppBase
         Label_11                    matlab.ui.control.Label
         HoiQuy_y                    matlab.ui.control.EditField
         HoiQuy_Nut                  matlab.ui.control.Button
+        HoiQuy_Label                matlab.ui.control.Label
+        HoiQuy_TanSo                matlab.ui.control.NumericEditField
         DaoHamTab                   matlab.ui.container.Tab
         NhphmsLabel                 matlab.ui.control.Label
         DaoHam_HamSo                matlab.ui.control.EditField
@@ -117,8 +119,7 @@ classdef DoAnMatlab_exported < matlab.apps.AppBase
 
     methods (Access = private)
 
-        % Callback function: DaoHam_GiaTriSaiSo, DaoHam_PhuongPhap, 
-        % NoiSuy_Nut_2
+        % Button pushed function: NoiSuy_Nut_2
         function DaoHam_GiaTriValueChanged(app, event)
         addpath(fullfile(pwd,'DoAnDaoHam')); %Duong dan file ham chuc nang
 
@@ -139,17 +140,14 @@ classdef DoAnMatlab_exported < matlab.apps.AppBase
         switch DaoHam_phuongphap
             case 'X?p x? ti?n'
                 app.DaoHam_GiaTriSaiSo.Items = {'O(h)', 'O(h^2)'};
-                DaoHam_kq = xapxitien(DaoHam_y_val,DaoHam_i,...
-                DaoHam_saiso,DaoHam_h);
+                DaoHam_kq = xapxitien(DaoHam_y_val,DaoHam_i,DaoHam_saiso,DaoHam_h);
             case 'X?p x? lùi'
                 app.DaoHam_GiaTriSaiSo.Items = {'O(h)', 'O(h^2)'};
-                DaoHam_kq = xapxilui(DaoHam_y_val,DaoHam_i,...
-                DaoHam_saiso,DaoHam_h);
+                DaoHam_kq = xapxilui(DaoHam_y_val,DaoHam_i,DaoHam_saiso,DaoHam_h);
             case 'X?p x? trung tâm'
                 %Doi sai so cat cut O(h)->O(h^2), O(h^2)->O(h^4)
                 app.DaoHam_GiaTriSaiSo.Items = {'O(h^2)', 'O(h^4)'};            
-                DaoHam_kq = xapxitrungtam(DaoHam_y_val,...
-                DaoHam_i,DaoHam_saiso,DaoHam_h);
+                DaoHam_kq = xapxitrungtam(DaoHam_y_val,DaoHam_i,DaoHam_saiso,DaoHam_h);
         end
                 app.DaoHam_KetQua.Value = num2str(DaoHam_kq);
         end
@@ -195,7 +193,7 @@ classdef DoAnMatlab_exported < matlab.apps.AppBase
         end
 
         % Callback function: NoiSuy_DaThuc, NoiSuy_DoThi, 
-        % NoiSuy_KetQua, NoiSuy_Nut, NoiSuy_PhuongPhap
+        % NoiSuy_KetQua, NoiSuy_Nut
         function NoiSuy_DaThucValueChanged(app, event)
         addpath(fullfile(pwd,'DoAnNoiSuy')); %Duong dan file ham chuc nang
         xa = str2num(app.NoiSuy_x.Value); % Danh sách x
@@ -408,23 +406,36 @@ classdef DoAnMatlab_exported < matlab.apps.AppBase
             uilabel(infoFig, 'Text', progress, 'Position', [150, 100, 200, 20]);
         end
 
-        % Callback function: HoiQuy_Nut, HoiQuy_PhuongPhap
+        % Button pushed function: HoiQuy_Nut
         function HoiQuy_KetQuaValueChanged(app, event)
         addpath(fullfile(pwd,'DoAnHoiQuy')); %Duong dan file ham chuc nang
         x = str2num(app.HoiQuy_x.Value); % Giá tr? x
         y = str2num(app.HoiQuy_y.Value); % Giá tr? y 
         X = app.HoiQuy_GiaTriSuyDoan.Value; 
         method = app.HoiQuy_PhuongPhap.Value; 
+        T = app.HoiQuy_TanSo.Value;
         switch method
             case 'Tuy?n tính'
+                 app.HoiQuy_TanSo.Visible = 'off';
+                 app.HoiQuy_Label.Visible = 'off';
                  app.HoiQuy_PhuongTrinh.Value = char(TuyenTinhSymbolic(x, y));
                  a = TuyenTinhSymbolic(x, y);                   
-            case 'Hàm m?'                                      
+            case 'Hàm m?'  
+                app.HoiQuy_TanSo.Visible = 'off';
+                app.HoiQuy_Label.Visible = 'off';
                 app.HoiQuy_PhuongTrinh.Value = char(HamMuSymbolic(x, y));
                 a = HamMuSymbolic(x, y);
-            case 'Logarit'                                     
+            case 'Logarit' 
+                app.HoiQuy_TanSo.Visible = 'off';
+                app.HoiQuy_Label.Visible = 'off';
                 app.HoiQuy_PhuongTrinh.Value = char(LogaritSymbolic(x, y));
                 a = LogaritSymbolic(x, y);
+            case 'L??ng giác'
+                app.HoiQuy_TanSo.Visible = 'on';
+                app.HoiQuy_Label.Visible = 'on';
+                app.HoiQuy_PhuongTrinh.Value = char ...
+                (HoiQuyLuongGiacSymbolic(x, y, T));
+                a = HoiQuyLuongGiacSymbolic(x, y, T);
         end            
         b = matlabFunction(a); 
         if strcmp(method, 'Tuy?n tính')               
@@ -433,9 +444,12 @@ classdef DoAnMatlab_exported < matlab.apps.AppBase
         elseif  strcmp(method, 'Hàm m?')
             yy =  HoiQuyHamMu(x,y); 
             app.HoiQuy_KetQua.Value = num2str(b(X));             
-        else
+        elseif strcmp(method, 'Logarit')
             yy =  HoiQuyHamLogarit(x,y); 
            app.HoiQuy_KetQua.Value = num2str(b(X));
+        else
+            yy =  HoiQuyLuongGiac(x, y, T); 
+            app.HoiQuy_KetQua.Value = num2str(b(X));
         end
         cla(app.HoiQuy_DoThi);
         plot(app.HoiQuy_DoThi, x, yy, '-b','LineWidth', 2);
@@ -461,6 +475,8 @@ classdef DoAnMatlab_exported < matlab.apps.AppBase
             case 'L?p'
                 fp = str2func(['@(x) ' app.Nghiem_Nhapfp.Value]); % Hàm fp(x)
                 [P1, n] = lap(fx, fp, a, b, saiso);
+            case 'Dây cung'
+                [P1, n] = daycung(fx, a, b, saiso);
         end
         app.Nghiem_KetQua.Value = sprintf('%.6f', P1);
         app.Nghiem_SoLanLap.Value = sprintf('%d', n);
@@ -561,7 +577,7 @@ classdef DoAnMatlab_exported < matlab.apps.AppBase
 
             % Create Nghiem_PhuongPhap
             app.Nghiem_PhuongPhap = uidropdown(app.NghiemTab);
-            app.Nghiem_PhuongPhap.Items = {'Chia ?ôi', 'L?p', 'Newton'};
+            app.Nghiem_PhuongPhap.Items = {'Chia ?ôi', 'L?p', 'Newton', 'Dây cung'};
             app.Nghiem_PhuongPhap.FontName = 'Times New Roman';
             app.Nghiem_PhuongPhap.Position = [166 244 100 22];
             app.Nghiem_PhuongPhap.Value = 'Chia ?ôi';
@@ -630,7 +646,6 @@ classdef DoAnMatlab_exported < matlab.apps.AppBase
             % Create NoiSuy_PhuongPhap
             app.NoiSuy_PhuongPhap = uidropdown(app.NoiSuyTab);
             app.NoiSuy_PhuongPhap.Items = {'Newton', 'Lagrange'};
-            app.NoiSuy_PhuongPhap.ValueChangedFcn = createCallbackFcn(app, @NoiSuy_DaThucValueChanged, true);
             app.NoiSuy_PhuongPhap.FontName = 'Times New Roman';
             app.NoiSuy_PhuongPhap.Position = [161 313 115 22];
             app.NoiSuy_PhuongPhap.Value = 'Newton';
@@ -694,7 +709,7 @@ classdef DoAnMatlab_exported < matlab.apps.AppBase
             % Create NoiSuy_Nut
             app.NoiSuy_Nut = uibutton(app.NoiSuyTab, 'push');
             app.NoiSuy_Nut.ButtonPushedFcn = createCallbackFcn(app, @NoiSuy_DaThucValueChanged, true);
-            app.NoiSuy_Nut.Position = [303 313 314 22];
+            app.NoiSuy_Nut.Position = [410 313 207 22];
             app.NoiSuy_Nut.Text = 'Ch?y ch??ng trình';
 
             % Create HoiQuyTab
@@ -729,8 +744,7 @@ classdef DoAnMatlab_exported < matlab.apps.AppBase
 
             % Create HoiQuy_PhuongPhap
             app.HoiQuy_PhuongPhap = uidropdown(app.HoiQuyTab);
-            app.HoiQuy_PhuongPhap.Items = {'Tuy?n tính', 'Hàm m?', 'Logarit'};
-            app.HoiQuy_PhuongPhap.ValueChangedFcn = createCallbackFcn(app, @HoiQuy_KetQuaValueChanged, true);
+            app.HoiQuy_PhuongPhap.Items = {'Tuy?n tính', 'L??ng giác', 'Hàm m?', 'Logarit'};
             app.HoiQuy_PhuongPhap.FontName = 'Times New Roman';
             app.HoiQuy_PhuongPhap.Position = [161 312 115 22];
             app.HoiQuy_PhuongPhap.Value = 'Tuy?n tính';
@@ -784,8 +798,22 @@ classdef DoAnMatlab_exported < matlab.apps.AppBase
             % Create HoiQuy_Nut
             app.HoiQuy_Nut = uibutton(app.HoiQuyTab, 'push');
             app.HoiQuy_Nut.ButtonPushedFcn = createCallbackFcn(app, @HoiQuy_KetQuaValueChanged, true);
-            app.HoiQuy_Nut.Position = [303 313 314 22];
+            app.HoiQuy_Nut.Position = [482 312 135 22];
             app.HoiQuy_Nut.Text = 'Ch?y ch??ng trình';
+
+            % Create HoiQuy_Label
+            app.HoiQuy_Label = uilabel(app.HoiQuyTab);
+            app.HoiQuy_Label.HorizontalAlignment = 'right';
+            app.HoiQuy_Label.Visible = 'off';
+            app.HoiQuy_Label.Position = [299 312 42 22];
+            app.HoiQuy_Label.Text = 'T?n s?';
+
+            % Create HoiQuy_TanSo
+            app.HoiQuy_TanSo = uieditfield(app.HoiQuyTab, 'numeric');
+            app.HoiQuy_TanSo.FontName = 'Times New Roman';
+            app.HoiQuy_TanSo.Visible = 'off';
+            app.HoiQuy_TanSo.Position = [402 312 56 22];
+            app.HoiQuy_TanSo.Value = 1;
 
             % Create DaoHamTab
             app.DaoHamTab = uitab(app.TabGroup);
@@ -824,7 +852,6 @@ classdef DoAnMatlab_exported < matlab.apps.AppBase
             % Create DaoHam_GiaTriSaiSo
             app.DaoHam_GiaTriSaiSo = uiswitch(app.DaoHamTab, 'slider');
             app.DaoHam_GiaTriSaiSo.Items = {'O(h)', 'O(h^2)'};
-            app.DaoHam_GiaTriSaiSo.ValueChangedFcn = createCallbackFcn(app, @DaoHam_GiaTriValueChanged, true);
             app.DaoHam_GiaTriSaiSo.FontName = 'Times New Roman';
             app.DaoHam_GiaTriSaiSo.Position = [172 200 45 20];
             app.DaoHam_GiaTriSaiSo.Value = 'O(h)';
@@ -838,7 +865,6 @@ classdef DoAnMatlab_exported < matlab.apps.AppBase
             % Create DaoHam_PhuongPhap
             app.DaoHam_PhuongPhap = uidropdown(app.DaoHamTab);
             app.DaoHam_PhuongPhap.Items = {'X?p x? ti?n', 'X?p x? lùi', 'X?p x? trung tâm'};
-            app.DaoHam_PhuongPhap.ValueChangedFcn = createCallbackFcn(app, @DaoHam_GiaTriValueChanged, true);
             app.DaoHam_PhuongPhap.FontName = 'Times New Roman';
             app.DaoHam_PhuongPhap.Position = [172 260 149 22];
             app.DaoHam_PhuongPhap.Value = 'X?p x? ti?n';
